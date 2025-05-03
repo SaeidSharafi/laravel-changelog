@@ -3,6 +3,7 @@
 namespace SaeidSharafi\Changelog;
 
 use Illuminate\Support\ServiceProvider;
+use SaeidSharafi\Changelog\Console\TestCommand;
 
 class ChangelogServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,10 @@ class ChangelogServiceProvider extends ServiceProvider
                 __DIR__.'/../database/migrations/' => database_path('migrations')
             ], 'migrations');
 
+            // Register the changelog entry command
+            $this->commands([
+                \SaeidSharafi\Changelog\Console\MakeChangelogEntryCommand::class,
+            ]);
         }
     }
 

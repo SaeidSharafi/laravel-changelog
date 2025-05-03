@@ -7,7 +7,17 @@ return [
     'current_version' => '1.0.0',
     'use_html'        => true,
     'changelog_path'  => [
-        'fallback' => base_path('CHANGELOG.md'),
-        'en'       => base_path('CHANGELOG.md')
+        'md' => [
+            'fallback' => null,
+            'en'       => null,
+        ],
+        'yaml' => [
+            'fallback' => null,
+            'en'       => null,
+        ],
+        'json' => [
+            'fallback' => null,
+            'en'       => null,
+        ],
     ],
 ];

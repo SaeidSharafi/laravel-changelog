@@ -7,6 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 use SaeidSharafi\Changelog\Changelog;
 use SaeidSharafi\Changelog\ChangelogFacade;
 
@@ -25,31 +26,29 @@ class CheckVersionMiddleware
         $currentVersion = config('changelog.current_version');
 
         if ($user && version_compare($user->version, $currentVersion, '<')) {
-
-
             try {
                 $newChanges = $this->changelog->getChanges();
-            } catch (Exception $e) {
-                // Log the error or handle it as needed
+            } catch (\Exception $e) {
                 if ($request->expectsJson()) {
-                    // API response
                     return response()->json(['error' => 'Error fetching changelog: ' . $e->getMessage()], 500);
                 }
                 throw $e;
             }
 
-            // Store changes in session or attach to request
+            // Attach changelog depending on request type
             if ($request->expectsJson()) {
-                // API response
-
-                $request->merge(['newChanges' => $newChanges]);
+                // API: Attach to response in after-middleware
+                $request->attributes->set('newChanges', $newChanges);
+            } elseif ($request->hasHeader('X-Inertia')) {
+                // Inertia.js: Share via Inertia::share
+                Inertia::share('newChanges', $newChanges);
             } else {
-;                // Web application
+                // Blade: Flash to session
                 session()->flash('newChanges', $newChanges);
-                $request->merge(['newChanges' => $newChanges]);
             }
 
-            User::where('id', $user->id)->update(['version' => $currentVersion]);
+            // Do NOT update user version here. Should be done after user acknowledges changelog.
+            // User::where('id', $user->id)->update(['version' => $currentVersion]);
         }
 
         return $next($request);

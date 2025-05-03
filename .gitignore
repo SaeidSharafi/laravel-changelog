@@ -1,0 +1,42 @@
+# Laravel
+/vendor/
+/node_modules/
+.env
+.env.*
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+/public/storage
+/storage/*.key
+/storage/app/public
+/storage/debugbar
+/storage/framework/cache/data
+/storage/framework/sessions
+/storage/framework/testing
+/storage/framework/views
+/storage/logs
+
+# Composer
+composer.lock
+
+# IDEs
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# PHPUnit
+.phpunit.result.cache
+
+# Misc
+*.log
+*.swp
+*.bak
+*.tmp
+
+# Testbench
+/testbench/
