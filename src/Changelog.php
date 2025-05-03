@@ -114,10 +114,10 @@ class Changelog
                 continue;
             }
             if ($found) {
-                $result[$version] = $changes;
+                return $found ? $result : $changelog;
             }
+            $result[$version] = $changes;
         }
-        // If sinceVersion not found, return all
-        return $found ? $result : $changelog;
+        return $changelog;
     }
 }
