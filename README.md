@@ -38,13 +38,26 @@ This package supports changelogs in **Markdown**, **YAML**, or **JSON** formats.
 ```yaml
 - version: 1.2.0
   date: 2025-05-03
+  title: "Release Title"
   changes:
-    - Added new feature X
-    - Fixed bug Y
+    - title: "Added new feature X"
+      subtitles:
+        - "Subfeature 1"
+        - "Subfeature 2"
+    - title: "Fixed bug Y"
+      subtitles:
+        - "Bugfix details"
+  notes:
+    - "Release note 1"
 - version: 1.1.0
   date: 2025-04-01
+  title: "Previous Release"
   changes:
-    - Improved performance
+    - title: "Improved performance"
+      subtitles:
+        - "Performance details"
+  notes:
+    - "Welcome!"
 ```
 
 ### JSON Example
@@ -53,17 +66,21 @@ This package supports changelogs in **Markdown**, **YAML**, or **JSON** formats.
   {
     "version": "1.2.0",
     "date": "2025-05-03",
+    "title": "Release Title",
     "changes": [
-      "Added new feature X",
-      "Fixed bug Y"
-    ]
+      { "title": "Added new feature X", "subtitles": ["Subfeature 1", "Subfeature 2"] },
+      { "title": "Fixed bug Y", "subtitles": ["Bugfix details"] }
+    ],
+    "notes": ["Release note 1"]
   },
   {
     "version": "1.1.0",
     "date": "2025-04-01",
+    "title": "Previous Release",
     "changes": [
-      "Improved performance"
-    ]
+      { "title": "Improved performance", "subtitles": ["Performance details"] }
+    ],
+    "notes": ["Welcome!"]
   }
 ]
 ```
@@ -73,11 +90,40 @@ This package supports changelogs in **Markdown**, **YAML**, or **JSON** formats.
 # Changelog
 
 ## 1.2.0 - 2025-05-03
-- Added new feature X
-- Fixed bug Y
+**Release Title**
+
+> [!NOTE] Please fill in the following structure manually.
+```yaml
+version: 1.2.0
+date: 2025-05-03
+title: Release Title
+changes:
+  - title: Added new feature X
+    subtitles:
+      - Subfeature 1
+      - Subfeature 2
+  - title: Fixed bug Y
+    subtitles:
+      - Bugfix details
+notes:
+  - Release note 1
+```
 
 ## 1.1.0 - 2025-04-01
-- Improved performance
+**Previous Release**
+
+> [!NOTE] Please fill in the following structure manually.
+```yaml
+version: 1.1.0
+date: 2025-04-01
+title: Previous Release
+changes:
+  - title: Improved performance
+    subtitles:
+      - Performance details
+notes:
+  - Welcome!
+```
 ```
 
 ## Artisan Command: changelog:entry
@@ -85,16 +131,16 @@ This package supports changelogs in **Markdown**, **YAML**, or **JSON** formats.
 You can scaffold a new changelog entry using:
 
 ```bash
-php artisan changelog:entry --version=1.3.0 --date=2025-06-01 --changes="New feature,Another change"
+php artisan changelog:entry --app-version=1.3.0 --date=2025-06-01 --silent
 ```
 
 **Options:**
 - `--file`  Specify a custom changelog file path (overrides autodetect, e.g. `--file=/path/to/changelog.yaml`)
-- `--version`  Version number (e.g. 1.3.0)
+- `--app-version`  Version number (e.g. 1.3.0)
 - `--date`  Release date (YYYY-MM-DD)
-- `--changes`  Comma-separated or multiline list of changes
+- `--silent`  Silently create a placeholder entry without prompts
 
-If options are omitted, you will be prompted interactively.
+If options are omitted, you will be prompted interactively for version, date, title, changes (with subtitles), and notes.
 
 ## Contributing
 

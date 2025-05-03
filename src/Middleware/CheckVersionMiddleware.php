@@ -27,7 +27,7 @@ class CheckVersionMiddleware
 
         if ($user && version_compare($user->version, $currentVersion, '<')) {
             try {
-                $newChanges = $this->changelog->getChanges();
+                $newChanges = $this->changelog->getChangesSince($user->version);
             } catch (\Exception $e) {
                 if ($request->expectsJson()) {
                     return response()->json(['error' => 'Error fetching changelog: ' . $e->getMessage()], 500);
@@ -36,19 +36,13 @@ class CheckVersionMiddleware
             }
 
             // Attach changelog depending on request type
-            if ($request->expectsJson()) {
-                // API: Attach to response in after-middleware
+            if ($request->hasHeader('X-Inertia')) {
+                $request->merge(['newChanges' => $newChanges]);
+            } elseif ($request->expectsJson()) {
                 $request->attributes->set('newChanges', $newChanges);
-            } elseif ($request->hasHeader('X-Inertia')) {
-                // Inertia.js: Share via Inertia::share
-                Inertia::share('newChanges', $newChanges);
             } else {
-                // Blade: Flash to session
                 session()->flash('newChanges', $newChanges);
             }
-
-            // Do NOT update user version here. Should be done after user acknowledges changelog.
-            // User::where('id', $user->id)->update(['version' => $currentVersion]);
         }
 
         return $next($request);

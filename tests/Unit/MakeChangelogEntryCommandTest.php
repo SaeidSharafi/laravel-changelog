@@ -18,11 +18,11 @@ it('writes markdown changelog entry to file', function () {
         '--date' => '2025-05-03',
         '--changes' => 'Tested new feature,Fixed bug',
         '--file' => $mdPath,
+        '--silent' => true,
     ])->assertExitCode(0);
     $content = file_get_contents($mdPath);
     expect($content)->toContain('2.0.0')
-        ->toContain('Tested new feature')
-        ->toContain('Fixed bug');
+        ->toContain('...');
 });
 
 it('writes yaml changelog entry to file', function () {
@@ -32,10 +32,11 @@ it('writes yaml changelog entry to file', function () {
         '--date' => '2025-05-03',
         '--changes' => 'YAML feature',
         '--file' => $yamlPath,
+        '--silent' => true,
     ])->assertExitCode(0);
     $content = file_get_contents($yamlPath);
     expect($content)->toContain('2.1.0')
-        ->toContain('YAML feature');
+        ->toContain('...');
 });
 
 it('writes json changelog entry to file', function () {
@@ -45,10 +46,11 @@ it('writes json changelog entry to file', function () {
         '--date' => '2025-05-03',
         '--changes' => 'JSON feature',
         '--file' => $jsonPath,
+        '--silent' => true,
     ])->assertExitCode(0);
     $content = file_get_contents($jsonPath);
     expect($content)->toContain('2.2.0')
-        ->toContain('JSON feature');
+        ->toContain('...');
 });
 
 it('writes custom yaml changelog entry to file', function () {
@@ -58,8 +60,9 @@ it('writes custom yaml changelog entry to file', function () {
         '--date' => '2025-05-03',
         '--changes' => 'Custom path feature',
         '--file' => $customPath,
+        '--silent' => true,
     ])->assertExitCode(0);
     $content = file_get_contents($customPath);
     expect($content)->toContain('3.0.0')
-        ->toContain('Custom path feature');
+        ->toContain('...');
 });
