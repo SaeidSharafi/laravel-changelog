@@ -118,6 +118,6 @@ class Changelog
             }
             $result[$version] = $changes;
         }
-        return $changelog;
+        return $found ? $result : $changelog;
     }
 }
