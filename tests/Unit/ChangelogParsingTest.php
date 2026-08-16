@@ -48,3 +48,37 @@ it('parses json changelog', function () {
         ->and($parsed[0]['changes'][0]['title'])->toBe('Added feature A')
         ->and($parsed[0]['changes'][0]['subtitles'])->toContain('Subfeature 1');
 });
+
+it('parses yaml changelog with all optional fields intact', function () {
+    $yaml = "- version: 2.0.0\n"
+        . "  date: 1404-05-21\n"
+        . "  title: 'Release v2'\n"
+        . "  highlight: true\n"
+        . "  changes:\n"
+        . "    - title: 'Added feature X'\n"
+        . "      type: feature\n"
+        . "      subtitles:\n"
+        . "        - 'Subfeature 1'\n"
+        . "      image: 'public/changelog/2.0.0/feature.png'\n"
+        . "      url: 'changelog'\n"
+        . "      video:\n"
+        . "        source: aparat\n"
+        . "        id: 'aparate-id-123'\n"
+        . "    - title: 'Fixed bug Y'\n"
+        . "      type: fix\n"
+        . "  notes:\n"
+        . "    - 'Note 1'\n";
+    $file = $this->testDir . '/changelog.yaml';
+    file_put_contents($file, $yaml);
+    \Illuminate\Support\Facades\Config::set('changelog.changelog_path.yaml.fallback', $file);
+    $changelog = new \SaeidSharafi\Changelog\Changelog();
+    $parsed = $changelog->getChangelog();
+    expect($parsed[0]['version'])->toBe('2.0.0')
+        ->and($parsed[0]['highlight'])->toBeTrue()
+        ->and($parsed[0]['changes'][0]['type'])->toBe('feature')
+        ->and($parsed[0]['changes'][0]['image'])->toBe('public/changelog/2.0.0/feature.png')
+        ->and($parsed[0]['changes'][0]['url'])->toBe('changelog')
+        ->and($parsed[0]['changes'][0]['video']['source'])->toBe('aparat')
+        ->and($parsed[0]['changes'][0]['video']['id'])->toBe('aparate-id-123')
+        ->and($parsed[0]['changes'][1]['type'])->toBe('fix');
+});

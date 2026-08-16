@@ -66,3 +66,57 @@ it('writes custom yaml changelog entry to file', function () {
     expect($content)->toContain('3.0.0')
         ->toContain('...');
 });
+
+it('prepends new yaml release entry (newest first)', function () {
+    $yamlPath = $this->testDir . '/changelog.yaml';
+    file_put_contents($yamlPath, "- version: 1.0.0\n  date: 1403-01-01\n  title: 'Old release'\n  changes: []\n");
+    $this->artisan('changelog:entry', [
+        '--app-version' => '2.0.0',
+        '--date' => '2025-05-03',
+        '--file' => $yamlPath,
+        '--silent' => true,
+    ])->assertExitCode(0);
+    $parsed = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($yamlPath));
+    expect($parsed[0]['version'])->toBe('2.0.0')
+        ->and($parsed[1]['version'])->toBe('1.0.0');
+});
+
+it('writes highlight flag into yaml entry when --highlight is passed', function () {
+    $yamlPath = $this->testDir . '/changelog.yaml';
+    $this->artisan('changelog:entry', [
+        '--app-version' => '2.1.0',
+        '--date' => '2025-05-03',
+        '--file' => $yamlPath,
+        '--silent' => true,
+        '--highlight' => true,
+    ])->assertExitCode(0);
+    $parsed = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($yamlPath));
+    expect($parsed[0]['highlight'])->toBeTrue()
+        ->and($parsed[0]['version'])->toBe('2.1.0');
+});
+
+it('does not write highlight flag when --highlight is omitted', function () {
+    $yamlPath = $this->testDir . '/changelog.yaml';
+    $this->artisan('changelog:entry', [
+        '--app-version' => '2.2.0',
+        '--date' => '2025-05-03',
+        '--file' => $yamlPath,
+        '--silent' => true,
+    ])->assertExitCode(0);
+    $parsed = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($yamlPath));
+    expect($parsed[0])->not->toHaveKey('highlight');
+});
+
+it('prints an AI prompt and writes no file with --ai', function () {
+    $command = $this->app->make(\SaeidSharafi\Changelog\Console\MakeChangelogEntryCommand::class);
+    $command->setLaravel($this->app);
+    $tester = new \Symfony\Component\Console\Tester\CommandTester($command);
+    $exitCode = $tester->execute(['--ai' => true, '--app-version' => '2.3.0']);
+    $output = $tester->getDisplay();
+    expect($exitCode)->toBe(0)
+        ->and($output)->toContain('changelog')
+        ->and($output)->toContain('schema')
+        ->and($output)->toContain('2.3.0');
+    expect($this->testDir . '/changelog.yaml')->not->toBeFile();
+    expect($this->testDir . '/CHANGELOG.md')->not->toBeFile();
+});

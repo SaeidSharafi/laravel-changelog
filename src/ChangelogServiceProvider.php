@@ -3,7 +3,6 @@
 namespace SaeidSharafi\Changelog;
 
 use Illuminate\Support\ServiceProvider;
-use SaeidSharafi\Changelog\Console\TestCommand;
 
 class ChangelogServiceProvider extends ServiceProvider
 {
@@ -24,10 +23,18 @@ class ChangelogServiceProvider extends ServiceProvider
                 __DIR__.'/../database/migrations/' => database_path('migrations')
             ], 'migrations');
 
+            $this->publishes([
+                __DIR__.'/../resources/js' => resource_path('js/vendor/changelog'),
+            ], 'changelog-assets');
+
             // Register the changelog entry command
             $this->commands([
                 \SaeidSharafi\Changelog\Console\MakeChangelogEntryCommand::class,
             ]);
+        }
+
+        if (config('changelog.routes.enabled', true)) {
+            $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         }
     }
 

@@ -20,4 +20,9 @@ return [
             'en'       => null,
         ],
     ],
+    'routes' => [
+        'enabled'    => true,
+        'prefix'     => 'changelog',
+        'middleware' => ['web', 'auth'],
+    ],
 ];
